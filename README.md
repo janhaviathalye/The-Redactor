@@ -87,7 +87,91 @@ pipenv run python -m pytest
    - Parses command-line arguments, initializes stats, creates output directories, and processes each input file according to the provided flags and options.
 
 
-# Redactor Project - Test Suite Overview
+## Flag Parameters and Definitions
+
+### --names
+
+Description: Identifies and redacts personal names from text, covering common name formats in email headers, capitalized names, and names within email addresses.
+
+Patterns Used:
+Capitalized Names: Detects names with capitalization patterns, such as "John Doe."
+Email Header Names: Matches names from common email fields (e.g., “From,” “To”) using regex.
+Email Local Part Names: Redacts names in email addresses like "jane.doe@example.com" by separating components in the local part.
+
+### --dates
+Description: Redacts various date formats (e.g., “March 5, 1985,” “05/12/2020,” “12-31-1999”) by recognizing both numeric and written formats.
+
+Patterns Used:
+Written Dates: Recognizes dates written out with months (e.g., “January 1, 2020”).
+Numeric Dates: Detects numeric formats such as MM/DD/YYYY, DD-MM-YYYY, and other standard variations.
+
+### --phones
+Description: Identifies phone numbers in various formats and redacts them, including formats with country codes, hyphens, parentheses, spaces, and dot separators.
+
+Patterns Used:
+US Formats: Matches numbers with or without country codes, parentheses around area codes, and hyphens or spaces as separators (e.g., “+1 (123) 456-7890”).
+Continuous Digits: Also detects numbers in formats without separators (e.g., “1234567890”).
+
+### --address
+Description: Detects and redacts physical (postal) addresses based on standard address components like street numbers, street names, and common address suffixes.
+
+Patterns Used:
+Single-line Addresses: Matches conventional address formats like "123 Main St." with flexibility for common address components (e.g., "Avenue," "Blvd").
+Multi-line Addresses: Recognizes addresses spanning multiple lines (e.g., with city and state on separate lines).
+
+### --concept
+Description: Redacts any sentence or segment in text containing specified keywords or phrases. Concepts can be entered multiple times to include multiple keywords.
+
+Detection Strategy:
+Keyword Matching: Uses regex to find exact matches for the specified concept(s) and applies redaction to the entire sentence containing the concept.
+Repeated Concepts: Multiple --concept flags may be used to handle more than one thematic redaction requirement.
+
+### --stats
+Description: Specifies where to output redaction statistics (stderr, stdout, or a specific file path).
+
+Output Details:
+Redaction Counts: Provides counts of each entity type redacted in each processed file.
+Position Information: Includes starting and ending indices of redacted text, helpful for debugging or auditing.
+
+## Definition of a Concept
+
+What is a Concept in this project?
+
+In this project, a concept is defined as any word or phrase representing an idea or theme that requires redaction. This differs from other redaction criteria, like names or dates, because it represents a broader thematic category rather than a specific entity type. For example, if the concept "kids" is specified, any mention of information related to children, even if indirect or implied, should be redacted.
+
+### Creating the Context of a Concept
+To effectively capture and redact concepts within a contextual scope:
+
+Keyword Matching: Exact keyword matching identifies instances of the concept in text. Each keyword is searched within sentences, and the entire sentence containing the keyword is redacted.
+Sentence Segmentation: Using sentence segmentation ensures that any relevant contextual information related to the concept is also redacted. For instance, if "kids" appears within a sentence, the whole sentence will be redacted to avoid leaving any related information that might provide indirect reference.
+Multiple Keywords: The --concept flag allows for repeated entries, enabling users to specify multiple keywords representing different aspects of the concept. Each keyword specified will be processed independently to maximize coverage.
+Justification for Method
+This approach ensures contextually accurate redactions without needing advanced natural language understanding. By redacting entire sentences containing concept keywords, the code:
+
+Minimizes the risk of leaving sensitive thematic information unredacted.
+Ensures broader contextual compliance with the redaction requirements for themes that can be nuanced or implied in language.
+
+## Stats Output Format
+The --stats flag specifies where the summary of the redaction process should be written. The summary can be directed to a file, stderr, or stdout, and provides detailed statistics to help track redacted items within the document(s).
+
+### Supported Output Locations
+File: If a file name is provided, the stats summary will be written to that file.
+stderr and stdout: Redirects the stats summary to standard error or standard output.
+Stats Format
+The stats output includes:
+
+### Total Counts: Number of each type of sensitive entity redacted (e.g., names, dates, phones, addresses, concepts).
+Detailed Entry Per File: For each processed file, the stats display the types and counts of entities censored and the starting and ending index of each redacted item within the text
+
+### Explanation
+Each file entry in the stats output details:
+
+Filename: The name of the file that was processed.
+Types and Counts: For each entity type (e.g., Names, Dates), the number of redactions is provided.
+Position Tracking: Each redacted item’s start and end indices are recorded, helping to verify the exact portions of text that were censored.
+
+
+## Test Case Overview
 
 This project aims to redact sensitive information from text files, such as names, phone numbers, dates, addresses, and specific concepts (e.g., "kids", "prison"). The test suite ensures that the redaction functionality works as expected across different components, validating accuracy, consistency, and robust error handling.
 
