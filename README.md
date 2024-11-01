@@ -88,56 +88,97 @@ pipenv run python -m pytest
 
 ## Test Cases
 
-This project includes several test cases designed to verify the correctness and functionality of key functions, such as downloading the incident PDF, extracting data, creating and populating the SQLite database, and querying the database for incident summaries. These tests ensure that each component works as expected and can handle edge cases such as missing data, incorrect formatting, and multiple-line fields.
+The test suite is organized to validate individual functionalities in the redactor system, such as merging overlapping redaction spans, redacting specific types of sensitive information (names, dates, phones, addresses), and handling concepts for broader redaction purposes. Each test case targets a specific function or redaction type, verifying correct detection, processing, and statistical tracking of redacted items. This ensures that the redactor accurately censors sensitive content across different inputs and formats, with tests for both successful processing and error handling to maintain reliability and robustness.
 
 The tests are located in the tests/ directory, and each function is tested individually. You can run all the tests using pytest, and each function has been tested with both normal inputs and edge cases.
 
-#### test_fetchincidents.py <br />
+### 1. `test_merge_overlapping_spans.py`
+   - **Purpose**: Tests the merging logic for overlapping, adjacent, and mixed spans in text.
+   - **Goal**: Ensures that overlapping spans are merged correctly to prevent redundant redaction, maintaining the integrity of the final redacted text.
 
-Purpose: Tests the fetchincidents() function to ensure that it can successfully download a PDF file from the provided URL.
+### 2. `test_output_redaction_stats.py`
+   - **Purpose**: Verifies the accurate output of redaction statistics.
+   - **Goal**: Checks that the counts of redacted entities (names, dates, phones, etc.) are output to `stdout`, `stderr`, or a file as specified. Ensures comprehensive and error-free reporting of statistics.
 
-Test Case:
+### 3. `test_process_text_file.py`
+   - **Purpose**: Simulates the redaction of a sample text file.
+   - **Goal**: Tests the end-to-end process, ensuring that the file is read, redacted, and written correctly. Also verifies proper error handling, especially for write permissions, with clear error reporting.
 
-The test case mocks the URL and simulates downloading the data. The response is a mock object that mimics a real PDF download.
-It verifies that the function correctly handles the HTTP request and retrieves data.
+### 4. `test_redact_email_text.py`
+   - **Purpose**: Focuses on redacting names in email headers (e.g., "From", "To" fields).
+   - **Goal**: Confirms that names in email fields are correctly detected and redacted, with accurate updating of redaction statistics.
 
-#### test_extractincidents.py <br />
+### 5. `test_redact_entities_hf.py`
+   - **Purpose**: Tests entity redaction using a mocked Hugging Face NER pipeline.
+   - **Goal**: Validates the Hugging Face model's integration with the redactor for redacting entities like names and locations, ensuring accurate detection, redaction, and stats.
 
-Purpose: Tests the extractincidents() function, which processes the PDF and extracts the necessary fields like date/time, incident number, location, nature, and ORI.
+### 6. `test_redact_entities_regex.py`
+   - **Purpose**: Tests regex-based redaction functionality for names, phones, dates, and addresses.
+   - **Goal**: Ensures regex patterns match sensitive information correctly, redacting accurately while maintaining consistent statistics and output.
 
-Test Case:
+### 7. `test_redact_entities_spacy.py`
+   - **Purpose**: Tests the SpaCy-based redactor across various entity types.
+   - **Goal**: Verifies SpaCy's capability to accurately redact names, dates, and addresses. Tests both individual and combined entity redaction, ensuring comprehensive coverage.
 
-The test case mocks a PDF file with sample incident data. It verifies that the extractincidents() function correctly parses the PDF and extracts the expected fields.
-It also checks that the function can handle multi-line fields and extracts the correct data from each row.
+### 8. `test_redact_sentences_with_concepts.py`
+   - **Purpose**: Verifies the redaction of sentences containing specific concepts (e.g., themes like "kids" or "prison").
+   - **Goal**: Tests for concept redaction with cases of single and multiple concepts, case insensitivity, multi-sentence redaction, and newline-delimited inputs, ensuring accurate redaction and stats.
 
-#### test_createdb.py <br />
-
-Purpose: Tests the createdb() function to ensure that a fresh SQLite database is created, and the schema is correctly set up.
-
-Test Case:
-
-The test case checks whether the database file is correctly created in the resources/ directory.
-It verifies that the incidents table exists with the correct schema, and no old data remains after creating a new database.
-
-#### test_populatedb.py <br />
-
-Purpose: Tests the populatedb() function, which takes the extracted data and inserts it into the SQLite database.
-
-Test Case:
-
-The test case verifies that the extracted data is correctly inserted into the incidents table.
-It checks that the number of records in the table matches the number of incidents passed to the function.
+## Summary
+Each test in this suite is designed to ensure the functionality, accuracy, and reliability of the redactor across various types of sensitive information and text structures. By validating entity detection, replacement, and statistics generation, this suite helps maintain robust, reliable, and accurate redaction performance across a wide range of document types and content.
 
 
-#### test_status.py <br />
 
-Purpose: Tests the status() function, which queries the database and prints a summary of the incident types and their counts.
 
-Test Case:
 
-The test case populates the database with mock data and verifies that the status() function correctly queries the data, sorts the results alphabetically, and prints the correct counts.
-It also ensures that the output is formatted correctly, with fields separated by pipes (|) and each row followed by a newline.
 
+You said:
+Also give a tests cases description of 4-5 lines at the beginning of writing all the test cases separately
+ChatGPT said:
+ChatGPT
+markdown
+Copy code
+# Redactor Project - Test Suite Overview
+
+This project aims to redact sensitive information from text files, such as names, phone numbers, dates, addresses, and specific concepts (e.g., "kids", "prison"). The test suite ensures that the redaction functionality works as expected across different components, validating accuracy, consistency, and robust error handling.
+
+## Test Cases Description
+
+The test suite is organized to validate individual functionalities in the redactor system, such as merging overlapping redaction spans, redacting specific types of sensitive information (names, dates, phones, addresses), and handling concepts for broader redaction purposes. Each test case targets a specific function or redaction type, verifying correct detection, processing, and statistical tracking of redacted items. This ensures that the redactor accurately censors sensitive content across different inputs and formats, with tests for both successful processing and error handling to maintain reliability and robustness.
+
+## Test Files Overview
+
+### 1. `test_merge_overlapping_spans.py`
+   - **Purpose**: Tests the merging logic for overlapping, adjacent, and mixed spans in text.
+   - **Goal**: Ensures that overlapping spans are merged correctly to prevent redundant redaction, maintaining the integrity of the final redacted text.
+
+### 2. `test_output_redaction_stats.py`
+   - **Purpose**: Verifies the accurate output of redaction statistics.
+   - **Goal**: Checks that the counts of redacted entities (names, dates, phones, etc.) are output to `stdout`, `stderr`, or a file as specified. Ensures comprehensive and error-free reporting of statistics.
+
+### 3. `test_process_text_file.py`
+   - **Purpose**: Simulates the redaction of a sample text file.
+   - **Goal**: Tests the end-to-end process, ensuring that the file is read, redacted, and written correctly. Also verifies proper error handling, especially for write permissions, with clear error reporting.
+
+### 4. `test_redact_email_text.py`
+   - **Purpose**: Focuses on redacting names in email headers (e.g., "From", "To" fields).
+   - **Goal**: Confirms that names in email fields are correctly detected and redacted, with accurate updating of redaction statistics.
+
+### 5. `test_redact_entities_hf.py`
+   - **Purpose**: Tests entity redaction using a mocked Hugging Face NER pipeline.
+   - **Goal**: Validates the Hugging Face model's integration with the redactor for redacting entities like names and locations, ensuring accurate detection, redaction, and stats.
+
+### 6. `test_redact_entities_regex.py`
+   - **Purpose**: Tests regex-based redaction functionality for names, phones, dates, and addresses.
+   - **Goal**: Ensures regex patterns match sensitive information correctly, redacting accurately while maintaining consistent statistics and output.
+
+### 7. `test_redact_entities_spacy.py`
+   - **Purpose**: Tests the SpaCy-based redactor across various entity types.
+   - **Goal**: Verifies SpaCy's capability to accurately redact names, dates, and addresses. Tests both individual and combined entity redaction, ensuring comprehensive coverage.
+
+### 8. `test_redact_sentences_with_concepts.py`
+   - **Purpose**: Verifies the redaction of sentences containing specific concepts (e.g., themes like "kids" or "prison").
+   - **Goal**: Tests for concept redaction with cases of single and multiple concepts, case insensitivity, multi-sentence redaction, and newline-delimited inputs, ensuring accurate redaction and stats.
 
 
 ## Bugs and Assumptions
