@@ -14,4 +14,4 @@ en_core_web_lg = {file = "https://github.com/explosion/spacy-models/releases/dow
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.11"
