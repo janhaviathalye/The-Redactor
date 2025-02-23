@@ -1,6 +1,4 @@
-# cis6930fa24-project1
-
-Project 1 - CIS 6930: Data Engineering Fall 2024
+# The Redactor
 
 Name: Janhavi Athalye
 
